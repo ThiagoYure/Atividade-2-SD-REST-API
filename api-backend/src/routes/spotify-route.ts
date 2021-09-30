@@ -9,7 +9,7 @@ dotenv.config();
 
 routes.get('/artista/:nome', (req: Request, res: Response) => {
     const credentials = base64encode(process.env.CLIENT_ID+":"+process.env.CLIENT_SECRET);
-    const nomeArtista = req.params.nome as string;
+    const nomeArtista = encodeURI(req.params.nome as string);
     axios({
         url: 'https://accounts.spotify.com/api/token',
         method: 'POST',
@@ -20,7 +20,6 @@ routes.get('/artista/:nome', (req: Request, res: Response) => {
         data: 'grant_type=client_credentials',
     }).then(resu => {
         const token = resu.data.access_token;
-        console.log(token);
         const result = SpotifyService.getArtistas(nomeArtista, token);
         result.then(data => {
             res.status(200).json(data.data.artists.items);
